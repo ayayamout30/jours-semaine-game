@@ -3,335 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mets les jours de la semaine dans l’ordre !</title>
+<title>Les jours et les mois – Jeu interactif</title>
 <style>
   :root{
-    --ink:#344b54;
-    --cream:#fffaf0;
-    --outline:#b9cfcb;
-    --yellow:#ffe3a3;
-    --blue:#c8d9f6;
-    --purple:#ddcdf3;
-    --pink:#f5cedd;
-    --mint:#bfe9df;
-    --peach:#ffd6bf;
-    --green:#d5efc2;
+    --ink:#304b55; --cream:#fffaf1; --card:#ffffff; --outline:#bed2cf;
+    --yellow:#ffe5a6; --blue:#cdddf8; --purple:#dfd0f5; --pink:#f7d2df;
+    --mint:#c4ebe1; --peach:#ffd9c4; --green:#d8f0c8; --sky:#d9eef7;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--cream);color:var(--ink)}
-  body{
-    background:
-      radial-gradient(circle at 10% 18%,#ffe5a7 0 8px,transparent 9px),
-      radial-gradient(circle at 91% 12%,#b8e8db 0 11px,transparent 12px),
-      radial-gradient(circle at 86% 76%,#f7c9d0 0 8px,transparent 9px),
-      var(--cream);
-  }
-  .app-shell{width:100%;min-height:100vh;padding:24px 14px 34px}
-  main{max-width:1150px;margin:auto}
-  header{text-align:center;margin-bottom:24px}
-  .emoji-row{display:inline-flex;gap:8px;background:#ffffffd9;padding:10px 18px;border-radius:999px;box-shadow:0 3px 12px #00000010;margin-bottom:16px}
-  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,5vw,62px);line-height:1.05;margin:0;max-width:900px;margin-inline:auto}
-  .subtitle{font-size:clamp(16px,2vw,24px);font-weight:700;margin:16px auto 0;max-width:800px}
-  .board{background:#fff;border-radius:30px;padding:24px;box-shadow:0 16px 48px #7a84671c}
-  .topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:26px}
-  .score{display:inline-flex;align-items:center;gap:10px;background:#fff0ba;border-radius:18px;padding:14px 20px;font-size:18px;font-weight:800}
-  .controls{display:flex;gap:10px;flex-wrap:wrap}
+  html{scroll-behavior:smooth}
+  body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:var(--cream);color:var(--ink)}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:
+    radial-gradient(circle at 7% 10%,#ffe2a0 0 8px,transparent 9px),
+    radial-gradient(circle at 91% 8%,#bfe9dd 0 11px,transparent 12px),
+    radial-gradient(circle at 94% 76%,#f5cbd7 0 9px,transparent 10px),
+    radial-gradient(circle at 12% 83%,#d5e4fb 0 10px,transparent 11px)}
+  .app-shell{width:100%;padding:22px 14px 42px}
+  main{max-width:1180px;margin:auto}
+  .hero{text-align:center;margin:6px auto 24px}
+  .emoji-row{display:inline-flex;gap:9px;background:#ffffffdd;padding:10px 18px;border-radius:999px;box-shadow:0 4px 16px #00000010;margin-bottom:14px}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,5vw,62px);line-height:1.05;margin:0 auto;max-width:940px}
+  .hero p{font-size:clamp(16px,2vw,22px);font-weight:700;max-width:780px;margin:14px auto 0}
+  .teacher-bar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px auto 4px}
+  .jump{border:0;border-radius:999px;padding:11px 16px;font-weight:800;background:#fff;box-shadow:0 4px 12px #0000000d;cursor:pointer;text-decoration:none;color:inherit}
+  .jump:hover{transform:translateY(-2px)}
+  .game-section{margin:28px 0 38px;scroll-margin-top:18px}
+  .section-title{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;margin:0 0 14px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,4vw,44px)}
+  .section-kicker{text-align:center;font-weight:800;margin:-2px 0 16px;font-size:clamp(15px,1.8vw,19px)}
+  .board{background:#fff;border-radius:30px;padding:24px;box-shadow:0 16px 50px #7182731b;border:1px solid #ffffff}
+  .topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:24px}
+  .score{display:inline-flex;align-items:center;gap:9px;background:#fff0ba;border-radius:18px;padding:13px 18px;font-size:18px;font-weight:800}
+  .controls{display:flex;gap:9px;flex-wrap:wrap}
   button{font:inherit;color:inherit}
-  .control{border:0;border-radius:16px;padding:13px 17px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px #0000000c}
-  #sound-button{background:#dff1f9}
-  #restart-button{background:#fde2e2}
-  h2{font-size:clamp(22px,3vw,33px);margin:10px 0 14px}
-  #card-tray,#slots{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
-  #card-tray{margin-bottom:28px;min-height:78px}
-  .day-card{
-    border:0;border-radius:21px;padding:16px 8px;min-height:76px;font-size:clamp(16px,1.8vw,22px);
-    font-weight:800;cursor:grab;touch-action:none;user-select:none;
-    box-shadow:0 5px 0 #344b5420,0 8px 18px #344b5414;
-    transition:transform .18s,box-shadow .18s,opacity .18s
-  }
-  .day-card:hover{transform:translateY(-3px)}
-  .day-card.selected{outline:4px solid #344b54;outline-offset:3px;transform:translateY(-5px)}
-  .day-card.drag-source{opacity:.35}
-  .day-card:active{cursor:grabbing}
-  .day-card[data-day="0"]{background:var(--peach)}
-  .day-card[data-day="1"]{background:var(--yellow)}
-  .day-card[data-day="2"]{background:var(--green)}
-  .day-card[data-day="3"]{background:var(--mint)}
-  .day-card[data-day="4"]{background:var(--blue)}
-  .day-card[data-day="5"]{background:var(--purple)}
-  .day-card[data-day="6"]{background:var(--pink)}
-  .day-slot{
-    min-height:110px;border:3px dashed var(--outline);background:#ffffffb8;border-radius:21px;padding:8px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;
-    transition:background .18s,transform .18s,border-color .18s
-  }
-  .day-slot.hovered{background:#e7f7dc;border-color:#75b981;transform:scale(1.035)}
-  .day-slot.filled{border-style:solid;border-color:#a5d9b6;background:#eef9e9}
-  .day-slot .day-card{width:100%;min-height:67px;cursor:default;box-shadow:0 3px 0 #344b5420}
-  .day-slot .day-card:hover{transform:none}
-  .num{font-size:14px;font-weight:800;opacity:.6}
-  .message{min-height:38px;text-align:center;font-weight:800;font-size:20px;margin:22px 0 0}
-  footer{text-align:center;padding:20px 4px 0;font-weight:700}
-  .drag-ghost{
-    position:fixed;z-index:1000;pointer-events:none;display:grid;place-items:center;border-radius:21px;
-    box-shadow:0 18px 35px #344b5440;font-size:22px;font-weight:800;padding:14px 22px;white-space:nowrap;
-    transform:translate(-50%,-50%) rotate(-5deg)
-  }
+  .control{border:0;border-radius:16px;padding:12px 15px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px #0000000c}
+  .listen-btn{background:#e0f2fa}.restart-btn{background:#fde3e5}.sound-btn{background:#e8f4dd}
+  .board h3{font-size:clamp(21px,2.7vw,30px);margin:10px 0 13px}
+  .tray,.slots{display:grid;gap:12px}
+  .days-grid{grid-template-columns:repeat(7,1fr)}
+  .months-grid{grid-template-columns:repeat(6,1fr)}
+  .tray{margin-bottom:26px;min-height:76px}
+  .item-card{border:0;border-radius:21px;padding:15px 7px;min-height:72px;font-size:clamp(15px,1.7vw,21px);font-weight:800;cursor:grab;touch-action:none;user-select:none;box-shadow:0 5px 0 #344b5420,0 8px 18px #344b5414;transition:transform .18s,box-shadow .18s,opacity .18s}
+  .item-card:hover{transform:translateY(-3px)}
+  .item-card.selected{outline:4px solid #304b55;outline-offset:3px;transform:translateY(-4px)}
+  .item-card.drag-source{opacity:.32}.item-card:active{cursor:grabbing}
+  .item-card:nth-child(8n+1){background:var(--peach)}
+  .item-card:nth-child(8n+2){background:var(--yellow)}
+  .item-card:nth-child(8n+3){background:var(--green)}
+  .item-card:nth-child(8n+4){background:var(--mint)}
+  .item-card:nth-child(8n+5){background:var(--blue)}
+  .item-card:nth-child(8n+6){background:var(--purple)}
+  .item-card:nth-child(8n+7){background:var(--pink)}
+  .item-card:nth-child(8n){background:var(--sky)}
+  .slot{min-height:103px;border:3px dashed var(--outline);background:#ffffffc4;border-radius:21px;padding:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:background .18s,transform .18s,border-color .18s}
+  .slot.hovered{background:#e9f8df;border-color:#79b887;transform:scale(1.025)}
+  .slot.filled{border-style:solid;border-color:#a7d9b7;background:#eff9ea}
+  .slot .item-card{width:100%;min-height:63px;cursor:default;box-shadow:0 3px 0 #344b5420}
+  .slot .item-card:hover{transform:none}
+  .num{font-size:14px;font-weight:900;opacity:.58}
+  .message{min-height:35px;text-align:center;font-weight:900;font-size:20px;margin:20px 0 0}
+  .divider{height:2px;border:0;background:linear-gradient(90deg,transparent,#cddbd8,transparent);margin:18px 0 4px}
+  footer{text-align:center;font-weight:700;padding:6px 8px 0;opacity:.82}
+  .drag-ghost{position:fixed;z-index:1000;pointer-events:none;display:grid;place-items:center;border-radius:21px;box-shadow:0 18px 35px #344b5440;font-size:21px;font-weight:800;padding:13px 20px;white-space:nowrap;transform:translate(-50%,-50%) rotate(-4deg)}
   .confetti-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1100}
-  .confetti{position:absolute;top:-25px;width:12px;height:20px;border-radius:3px;animation:fall var(--duration) linear forwards;animation-delay:var(--delay)}
+  .confetti{position:absolute;top:-25px;width:11px;height:19px;border-radius:3px;animation:fall var(--duration) linear forwards;animation-delay:var(--delay)}
   @keyframes fall{to{transform:translate(var(--drift),100vh) rotate(850deg);opacity:0}}
-  button:focus-visible{outline:4px solid #265d7b;outline-offset:4px}
-  @media(max-width:900px){#card-tray,#slots{grid-template-columns:repeat(4,1fr)}}
-  @media(max-width:560px){
-    .app-shell{padding:16px 10px 28px}
-    .board{padding:16px}
-    #card-tray,#slots{grid-template-columns:repeat(2,1fr)}
-    .day-card{min-height:66px}
-    .day-slot{min-height:90px}
-    .controls{width:100%}
-    .control{flex:1}
+  button:focus-visible,.jump:focus-visible{outline:4px solid #265d7b;outline-offset:4px}
+  @media(max-width:980px){.days-grid{grid-template-columns:repeat(4,1fr)}.months-grid{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:650px){
+    .app-shell{padding:14px 9px 30px}.board{padding:15px}.days-grid,.months-grid{grid-template-columns:repeat(2,1fr)}
+    .item-card{min-height:64px}.slot{min-height:88px}.controls{width:100%}.control{flex:1}.topbar{align-items:stretch}
   }
-  @media(prefers-reduced-motion:reduce){
-    .confetti{animation-duration:.01ms!important}
-    .day-card,.day-slot{transition:none}
-  }
+  @media(prefers-reduced-motion:reduce){.confetti{animation-duration:.01ms!important}.item-card,.slot,.jump{transition:none}}
 </style>
 </head>
 <body>
 <div class="app-shell">
 <main>
-  <header>
-    <div class="emoji-row" aria-hidden="true"><span>☀️</span><span>✏️</span><span>🌈</span></div>
-    <h1>Mets les jours de la semaine dans l’ordre !</h1>
-    <p class="subtitle">Écoute les jours, puis glisse chaque carte à sa bonne place !</p>
+  <header class="hero">
+    <div class="emoji-row" aria-hidden="true"><span>☀️</span><span>🗓️</span><span>✏️</span><span>🌈</span></div>
+    <h1>Les jours de la semaine & les mois de l’année</h1>
+    <p>Écoute, clique ou glisse les cartes dans le bon ordre. Un jeu simple pour apprendre en s’amusant !</p>
+    <div class="teacher-bar">
+      <a class="jump" href="#jours">📅 Aller aux jours</a>
+      <a class="jump" href="#mois">🌷 Aller aux mois</a>
+    </div>
   </header>
 
-  <section class="board" aria-label="Jeu des jours de la semaine">
-    <div class="topbar">
-      <div class="score"><span aria-hidden="true">⭐</span><span>Score :</span><strong id="score" aria-live="polite">0/7</strong></div>
-      <div class="controls">
-        <button id="sound-button" class="control" type="button" aria-pressed="true">🔊 Son activé</button>
-        <button id="restart-button" class="control" type="button">🔄 Recommencer</button>
+  <section class="game-section" id="jours">
+    <h2 class="section-title">📅 Les jours de la semaine</h2>
+    <p class="section-kicker">De lundi à dimanche</p>
+    <div class="board game" data-game="days">
+      <div class="topbar">
+        <div class="score"><span>⭐</span><span>Score :</span><strong class="score-value" aria-live="polite">0/7</strong></div>
+        <div class="controls">
+          <button class="control listen-btn" type="button">▶️ Écouter dans l’ordre</button>
+          <button class="control sound-btn" type="button" aria-pressed="true">🔊 Son activé</button>
+          <button class="control restart-btn" type="button">🔄 Recommencer</button>
+        </div>
       </div>
+      <h3>1. Les cartes à ranger</h3>
+      <div class="tray days-grid"></div>
+      <h3>2. Mets-les dans le bon ordre</h3>
+      <div class="slots days-grid"></div>
+      <p class="message" role="status" aria-live="polite"></p>
     </div>
-
-    <h2>Les cartes à ranger</h2>
-    <div id="card-tray">
-      <button type="button" class="day-card" data-day="0">Lundi</button>
-      <button type="button" class="day-card" data-day="1">Mardi</button>
-      <button type="button" class="day-card" data-day="2">Mercredi</button>
-      <button type="button" class="day-card" data-day="3">Jeudi</button>
-      <button type="button" class="day-card" data-day="4">Vendredi</button>
-      <button type="button" class="day-card" data-day="5">Samedi</button>
-      <button type="button" class="day-card" data-day="6">Dimanche</button>
-    </div>
-
-    <h2>Les places de lundi à dimanche</h2>
-    <div id="slots">
-      <button type="button" class="day-slot" data-slot="0" aria-label="Place 1, lundi"><span class="num">1</span></button>
-      <button type="button" class="day-slot" data-slot="1" aria-label="Place 2, mardi"><span class="num">2</span></button>
-      <button type="button" class="day-slot" data-slot="2" aria-label="Place 3, mercredi"><span class="num">3</span></button>
-      <button type="button" class="day-slot" data-slot="3" aria-label="Place 4, jeudi"><span class="num">4</span></button>
-      <button type="button" class="day-slot" data-slot="4" aria-label="Place 5, vendredi"><span class="num">5</span></button>
-      <button type="button" class="day-slot" data-slot="5" aria-label="Place 6, samedi"><span class="num">6</span></button>
-      <button type="button" class="day-slot" data-slot="6" aria-label="Place 7, dimanche"><span class="num">7</span></button>
-    </div>
-
-    <p id="feedback" class="message" role="status" aria-live="polite"></p>
   </section>
 
-  <footer>Astuce : tu peux aussi cliquer sur une carte, puis cliquer sur sa place.</footer>
+  <hr class="divider">
+
+  <section class="game-section" id="mois">
+    <h2 class="section-title">🌷 Les mois de l’année</h2>
+    <p class="section-kicker">De janvier à décembre</p>
+    <div class="board game" data-game="months">
+      <div class="topbar">
+        <div class="score"><span>⭐</span><span>Score :</span><strong class="score-value" aria-live="polite">0/12</strong></div>
+        <div class="controls">
+          <button class="control listen-btn" type="button">▶️ Écouter dans l’ordre</button>
+          <button class="control sound-btn" type="button" aria-pressed="true">🔊 Son activé</button>
+          <button class="control restart-btn" type="button">🔄 Recommencer</button>
+        </div>
+      </div>
+      <h3>1. Les cartes à ranger</h3>
+      <div class="tray months-grid"></div>
+      <h3>2. Mets-les dans le bon ordre</h3>
+      <div class="slots months-grid"></div>
+      <p class="message" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <footer>Astuce : l’enfant peut glisser une carte, ou simplement cliquer sur la carte puis sur sa place.</footer>
 </main>
 <div id="confetti-layer" class="confetti-layer" aria-hidden="true"></div>
 </div>
 
 <script>
-const names = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
-const tray = document.getElementById("card-tray");
-const cards = [...tray.querySelectorAll(".day-card")];
-const slots = [...document.querySelectorAll(".day-slot")];
-const score = document.getElementById("score");
-const feedback = document.getElementById("feedback");
-const soundButton = document.getElementById("sound-button");
-let selected = null, muted = false, count = 0, audioContext = null, drag = null;
+const GAME_DATA = {
+  days: ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"],
+  months: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]
+};
+let audioContext = null;
 
-function speak(text){
+function speak(text, muted=false, rate=.82){
   if(muted || !("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "fr-FR";
-  utterance.rate = .83;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "fr-FR"; u.rate = rate; u.pitch = 1.05;
   const voices = speechSynthesis.getVoices();
   const french = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("fr"));
-  if(french) utterance.voice = french;
-  speechSynthesis.speak(utterance);
+  if(french) u.voice = french;
+  speechSynthesis.speak(u);
 }
-
-function notes(frequencies,gentle=false){
+function notes(freqs, muted=false, gentle=false){
   if(muted) return;
   try{
     audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
     if(audioContext.state === "suspended") audioContext.resume();
     const start = audioContext.currentTime;
-    frequencies.forEach((frequency,index)=>{
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      const t = start + index * (gentle ? .18 : .13);
-      gain.gain.setValueAtTime(.0001,t);
-      gain.gain.exponentialRampToValueAtTime(gentle ? .075 : .13,t+.025);
-      gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
-      oscillator.connect(gain).connect(audioContext.destination);
-      oscillator.start(t);
-      oscillator.stop(t+.25);
+    freqs.forEach((f,i)=>{
+      const o=audioContext.createOscillator(), g=audioContext.createGain();
+      o.type="sine"; o.frequency.value=f;
+      const t=start+i*(gentle?.18:.13);
+      g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(gentle?.07:.12,t+.025);
+      g.gain.exponentialRampToValueAtTime(.0001,t+.24);
+      o.connect(g).connect(audioContext.destination); o.start(t); o.stop(t+.25);
     });
   }catch(e){}
 }
-
-function clearSelection(){
-  if(selected) selected.classList.remove("selected");
-  selected = null;
-}
-function choose(card){
-  if(card.closest(".day-slot")) return;
-  speak(names[Number(card.dataset.day)]);
-  if(selected===card){clearSelection();return;}
-  clearSelection();
-  selected=card;
-  card.classList.add("selected");
-  feedback.textContent="";
-}
 function celebrate(){
-  const layer=document.getElementById("confetti-layer");
-  layer.replaceChildren();
-  const colors=["#ffbc73","#f3a9bb","#8bd1bc","#a4bae9","#f6dc7d"];
-  for(let i=0;i<85;i++){
-    const p=document.createElement("span");
-    p.className="confetti";
-    p.style.left=Math.random()*100+"%";
-    p.style.background=colors[i%colors.length];
-    p.style.setProperty("--drift",(Math.random()-.5)*250+"px");
-    p.style.setProperty("--duration",(2.3+Math.random()*1.8)+"s");
-    p.style.setProperty("--delay",(Math.random()*.8)+"s");
-    layer.appendChild(p);
+  const layer=document.getElementById("confetti-layer"); layer.replaceChildren();
+  const colors=["#ffbc73","#f3a9bb","#8bd1bc","#a4bae9","#f6dc7d","#cdb6eb"];
+  for(let i=0;i<90;i++){
+    const p=document.createElement("span"); p.className="confetti";
+    p.style.left=Math.random()*100+"%"; p.style.background=colors[i%colors.length];
+    p.style.setProperty("--drift",(Math.random()-.5)*260+"px");
+    p.style.setProperty("--duration",(2.2+Math.random()*1.8)+"s");
+    p.style.setProperty("--delay",(Math.random()*.8)+"s"); layer.appendChild(p);
   }
   setTimeout(()=>layer.replaceChildren(),5000);
 }
-function place(card,slot){
-  if(!card || !slot || card.closest(".day-slot") || slot.classList.contains("filled")) return;
-  if(Number(card.dataset.day)!==Number(slot.dataset.slot)){
-    feedback.textContent="Essaie encore ! 🌷";
-    notes([330,294],true);
-    speak("Essaie encore !");
-    return;
+function shuffle(a){
+  const copy=[...a];
+  for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}
+  return copy;
+}
+
+class OrderGame{
+  constructor(root,names){
+    this.root=root; this.names=names; this.tray=root.querySelector(".tray"); this.slotsEl=root.querySelector(".slots");
+    this.score=root.querySelector(".score-value"); this.feedback=root.querySelector(".message");
+    this.soundBtn=root.querySelector(".sound-btn"); this.restartBtn=root.querySelector(".restart-btn"); this.listenBtn=root.querySelector(".listen-btn");
+    this.selected=null; this.muted=false; this.count=0; this.drag=null; this.cards=[]; this.slots=[];
+    this.build(); this.bind(); this.reset();
   }
-  clearSelection();
-  card.classList.remove("drag-source");
-  card.setAttribute("tabindex","-1");
-  slot.appendChild(card);
-  slot.classList.add("filled");
-  slot.setAttribute("aria-label","Place "+(Number(slot.dataset.slot)+1)+" : "+names[Number(slot.dataset.slot)]+", bien placé");
-  count++;
-  score.textContent=count+"/7";
-  if(count===7){
-    feedback.textContent="Bravo ! Tu as réussi ! 🎉";
-    notes([523,659,784,1047,1319]);
-    speak("Bravo ! Tu as réussi !");
-    celebrate();
-  }else{
-    feedback.textContent="Super ! Continue ! ⭐";
-    notes([523,784]);
+  build(){
+    this.names.forEach((name,index)=>{
+      const card=document.createElement("button"); card.type="button"; card.className="item-card"; card.dataset.index=index; card.textContent=name;
+      this.tray.appendChild(card); this.cards.push(card);
+      const slot=document.createElement("button"); slot.type="button"; slot.className="slot"; slot.dataset.slot=index;
+      slot.innerHTML=`<span class="num">${index+1}</span>`; slot.setAttribute("aria-label",`Place ${index+1}, ${name.toLowerCase()}`);
+      this.slotsEl.appendChild(slot); this.slots.push(slot);
+    });
+  }
+  clearSelection(){ if(this.selected) this.selected.classList.remove("selected"); this.selected=null; }
+  choose(card){
+    if(card.closest(".slot")) return;
+    speak(this.names[Number(card.dataset.index)],this.muted);
+    if(this.selected===card){this.clearSelection();return;}
+    this.clearSelection(); this.selected=card; card.classList.add("selected"); this.feedback.textContent="";
+  }
+  place(card,slot){
+    if(!card || !slot || card.closest(".slot") || slot.classList.contains("filled")) return;
+    if(Number(card.dataset.index)!==Number(slot.dataset.slot)){
+      this.feedback.textContent="Essaie encore ! 🌷"; notes([330,294],this.muted,true); speak("Essaie encore !",this.muted); return;
+    }
+    this.clearSelection(); card.classList.remove("drag-source"); card.setAttribute("tabindex","-1"); slot.appendChild(card); slot.classList.add("filled");
+    this.count++; this.score.textContent=`${this.count}/${this.names.length}`;
+    if(this.count===this.names.length){
+      this.feedback.textContent="Bravo ! Tout est dans le bon ordre ! 🎉"; notes([523,659,784,1047,1319],this.muted); speak("Bravo ! Tout est dans le bon ordre !",this.muted); celebrate();
+    }else{this.feedback.textContent="Super ! Continue ! ⭐"; notes([523,784],this.muted);}
+  }
+  reset(){
+    if("speechSynthesis" in window) speechSynthesis.cancel(); this.clearSelection(); this.drag?.ghost?.remove(); this.drag=null; this.count=0;
+    this.score.textContent=`0/${this.names.length}`; this.feedback.textContent="";
+    this.slots.forEach((slot,i)=>{slot.classList.remove("filled","hovered");slot.replaceChildren();const n=document.createElement("span");n.className="num";n.textContent=i+1;slot.appendChild(n);slot.setAttribute("aria-label",`Place ${i+1}, ${this.names[i].toLowerCase()}`);});
+    shuffle(this.cards).forEach(card=>{card.classList.remove("drag-source","selected");card.removeAttribute("tabindex");this.tray.appendChild(card);});
+  }
+  listenAll(){
+    if(this.muted || !("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(this.names.join(", ")); u.lang="fr-FR";u.rate=.72;u.pitch=1.03;
+    const voices=speechSynthesis.getVoices(); const fr=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith("fr")); if(fr)u.voice=fr;
+    speechSynthesis.speak(u);
+  }
+  bind(){
+    this.cards.forEach(card=>{
+      card.addEventListener("click",()=>{if(card.dataset.ignoreClick==="true"){card.dataset.ignoreClick="false";return;}this.choose(card);});
+      card.addEventListener("pointerdown",e=>{if(card.closest(".slot")||e.button!==0)return;this.drag={card,startX:e.clientX,startY:e.clientY,active:false,ghost:null};});
+    });
+    document.addEventListener("pointermove",e=>{
+      if(!this.drag)return;
+      if(!this.drag.active && Math.hypot(e.clientX-this.drag.startX,e.clientY-this.drag.startY)>9){
+        this.drag.active=true;this.clearSelection();const g=document.createElement("div");g.className="drag-ghost";g.textContent=this.names[Number(this.drag.card.dataset.index)];g.style.background=getComputedStyle(this.drag.card).backgroundColor;g.style.color=getComputedStyle(this.drag.card).color;document.body.appendChild(g);this.drag.ghost=g;this.drag.card.classList.add("drag-source");
+      }
+      if(!this.drag.active)return;e.preventDefault();this.drag.ghost.style.left=e.clientX+"px";this.drag.ghost.style.top=e.clientY+"px";
+      this.slots.forEach(s=>s.classList.remove("hovered"));const t=document.elementFromPoint(e.clientX,e.clientY)?.closest(".slot");if(t&&this.root.contains(t)&&!t.classList.contains("filled"))t.classList.add("hovered");
+    },{passive:false});
+    document.addEventListener("pointerup",e=>{
+      if(!this.drag)return;const cur=this.drag;this.drag=null;if(!cur.active)return;cur.card.dataset.ignoreClick="true";cur.ghost?.remove();cur.card.classList.remove("drag-source");this.slots.forEach(s=>s.classList.remove("hovered"));
+      speak(this.names[Number(cur.card.dataset.index)],this.muted);const slot=document.elementFromPoint(e.clientX,e.clientY)?.closest(".slot");if(slot&&this.root.contains(slot))this.place(cur.card,slot);setTimeout(()=>{cur.card.dataset.ignoreClick="false";},350);
+    });
+    document.addEventListener("pointercancel",()=>{if(!this.drag)return;this.drag.ghost?.remove();this.drag.card.classList.remove("drag-source");this.drag=null;this.slots.forEach(s=>s.classList.remove("hovered"));});
+    this.slots.forEach(slot=>slot.addEventListener("click",()=>this.place(this.selected,slot)));
+    this.restartBtn.addEventListener("click",()=>this.reset());
+    this.listenBtn.addEventListener("click",()=>this.listenAll());
+    this.soundBtn.addEventListener("click",()=>{this.muted=!this.muted;if(this.muted&&"speechSynthesis" in window)speechSynthesis.cancel();this.soundBtn.setAttribute("aria-pressed",String(!this.muted));this.soundBtn.textContent=this.muted?"🔇 Son désactivé":"🔊 Son activé";});
   }
 }
-function reset(){
-  if("speechSynthesis" in window) speechSynthesis.cancel();
-  clearSelection();
-  if(drag && drag.ghost) drag.ghost.remove();
-  drag=null;
-  document.querySelectorAll(".hovered").forEach(el=>el.classList.remove("hovered"));
-  document.getElementById("confetti-layer").replaceChildren();
-  count=0;
-  score.textContent="0/7";
-  feedback.textContent="";
-  slots.forEach((slot,index)=>{
-    slot.classList.remove("filled");
-    slot.setAttribute("aria-label","Place "+(index+1)+", "+names[index].toLowerCase());
-  });
-  const shuffled=[...cards];
-  for(let i=shuffled.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
-  }
-  shuffled.forEach(card=>{
-    card.classList.remove("drag-source","selected");
-    card.removeAttribute("tabindex");
-    tray.appendChild(card);
-  });
-}
-cards.forEach(card=>{
-  card.addEventListener("click",()=>{
-    if(card.dataset.ignoreClick==="true"){card.dataset.ignoreClick="false";return;}
-    choose(card);
-  });
-  card.addEventListener("pointerdown",event=>{
-    if(card.closest(".day-slot") || event.button!==0) return;
-    drag={card,startX:event.clientX,startY:event.clientY,active:false,ghost:null};
-  });
-});
-document.addEventListener("pointermove",event=>{
-  if(!drag) return;
-  if(!drag.active && Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>9){
-    drag.active=true;
-    clearSelection();
-    const ghost=document.createElement("div");
-    ghost.className="drag-ghost";
-    ghost.textContent=names[Number(drag.card.dataset.day)];
-    ghost.style.background=getComputedStyle(drag.card).backgroundColor;
-    ghost.style.color=getComputedStyle(drag.card).color;
-    document.body.appendChild(ghost);
-    drag.ghost=ghost;
-    drag.card.classList.add("drag-source");
-  }
-  if(!drag.active) return;
-  event.preventDefault();
-  drag.ghost.style.left=event.clientX+"px";
-  drag.ghost.style.top=event.clientY+"px";
-  document.querySelectorAll(".hovered").forEach(el=>el.classList.remove("hovered"));
-  const target=document.elementFromPoint(event.clientX,event.clientY)?.closest(".day-slot");
-  if(target && !target.classList.contains("filled")) target.classList.add("hovered");
-},{passive:false});
-function finishDrag(event){
-  if(!drag) return;
-  const current=drag;
-  drag=null;
-  if(!current.active) return;
-  current.card.dataset.ignoreClick="true";
-  current.ghost.remove();
-  current.card.classList.remove("drag-source");
-  document.querySelectorAll(".hovered").forEach(el=>el.classList.remove("hovered"));
-  speak(names[Number(current.card.dataset.day)]);
-  const slot=document.elementFromPoint(event.clientX,event.clientY)?.closest(".day-slot");
-  if(slot) place(current.card,slot);
-  setTimeout(()=>{current.card.dataset.ignoreClick="false";},350);
-}
-document.addEventListener("pointerup",finishDrag);
-document.addEventListener("pointercancel",()=>{
-  if(!drag) return;
-  drag.ghost?.remove();
-  drag.card.classList.remove("drag-source");
-  drag=null;
-  document.querySelectorAll(".hovered").forEach(el=>el.classList.remove("hovered"));
-});
-slots.forEach(slot=>slot.addEventListener("click",()=>place(selected,slot)));
-document.getElementById("restart-button").addEventListener("click",reset);
-soundButton.addEventListener("click",()=>{
-  muted=!muted;
-  if(muted && "speechSynthesis" in window) speechSynthesis.cancel();
-  soundButton.setAttribute("aria-pressed",String(!muted));
-  soundButton.textContent=muted ? "🔇 Son désactivé" : "🔊 Son activé";
-});
-reset();
+
+document.querySelectorAll(".game").forEach(root=>new OrderGame(root,GAME_DATA[root.dataset.game]));
 </script>
 </body>
 </html>
